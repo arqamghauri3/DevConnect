@@ -1,0 +1,28 @@
+# General Node.js ignores
+node_modules
+package-lock.json
+yarn.lock
+
+# Next.js specific ignores
+.next/
+out/
+build/
+.swc/
+
+# Environment variables
+.env
+.env.*
+!/.env.example
+
+# Logs and temp files
+*.log
+tmp/
+temp/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional: IDE specific files
+.idea
+.vscode
