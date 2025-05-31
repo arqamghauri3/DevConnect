@@ -13,21 +13,21 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const queryParam = {
-      username: searchParams.get("username"),
-    };
-    const result = UsernameQuerySchema.safeParse(queryParam);
-    console.log(result);
+    const usernameRaw = searchParams.get("username");
+    console.log("Received username param:", usernameRaw);
 
+    const result = UsernameQuerySchema.safeParse({ username: usernameRaw });
+    console.log("Validation result:", result);
     if (!result.success) {
       const usernameErrors = result.error.format().username?._errors || [];
+      console.log("Username validation errors:", usernameErrors[0]);
       return Response.json(
         {
           success: false,
           message: usernameErrors[0],
         },
         {
-          status: 400,
+          status: 500,
         }
       );
     }
