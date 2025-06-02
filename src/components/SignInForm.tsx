@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { ApiResponse } from "@/types/ApiResponse";
 import { signInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
-function page() {
+function SignInForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,7 +58,7 @@ function page() {
   return (
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
               control={form.control}
               name="identifier"
@@ -97,7 +97,7 @@ function page() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2.5 px-4 "
+              className="w-full py-2.5 px-4 rounded-full"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center gap-2">
@@ -113,4 +113,4 @@ function page() {
   );
 }
 
-export default page;
+export default SignInForm;

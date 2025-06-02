@@ -35,7 +35,7 @@ const page = () => {
         code: data.code,
       });
       toast.success(response.data.message);
-      router.replace("sign-in");
+      router.replace("/landing");
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
