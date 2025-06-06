@@ -36,6 +36,9 @@ function SignUpForm() {
     defaultValues: {
       username: "",
       email: "",
+      firstName: "",
+      lastName: "",
+      dateOfBirth: new Date(),
       password: "",
     },
   });
@@ -65,6 +68,7 @@ function SignUpForm() {
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
+    console.log(data)
     try {
       const response = await axios.post("/api/sign-up", data);
       toast.success(response.data.message);
@@ -87,7 +91,7 @@ function SignUpForm() {
             <FormItem>
               <FormControl>
                 <Input
-                  placeholder="e.g. johndoe"
+                  placeholder="Username"
                   {...field}
                   className="w-full px-4 py-2.5 mt-1 "
                   onChange={(e) => {
@@ -135,7 +139,66 @@ function SignUpForm() {
             </FormItem>
           )}
         />
-
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="e.g. John"
+                  {...field}
+                  className="w-full px-4 py-2.5 mt-1 "
+                />
+              </FormControl>
+              <FormMessage className="text-red-500 text-sm mt-1" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="e.g. Doe"
+                  {...field}
+                  className="w-full px-4 py-2.5 mt-1 "
+                />
+              </FormControl>
+              <FormMessage className="text-red-500 text-sm mt-1" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="dateOfBirth"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="date"
+                  placeholder="e.g. 2000-01-01"
+                  {...field}
+                  value={
+                    field.value instanceof Date
+                      ? field.value.toISOString().split("T")[0]
+                      : field.value || ""
+                  }
+                  onChange={(e) => {
+                    const dateValue = e.target.value;
+                    field.onChange(dateValue ? new Date(dateValue) : "");
+                  }}
+                  className="w-full px-4 py-2.5 mt-1"
+                />
+              </FormControl>
+              <FormMessage className="text-red-500 text-sm mt-1" />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="password"

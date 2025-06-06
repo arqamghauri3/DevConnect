@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SunIcon } from "lucide-react";
 import { useTheme } from "@/context/ThemeProvider";
+import { signIn } from "next-auth/react";
 const page = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const { toggleTheme } = useTheme();
@@ -62,10 +63,10 @@ const page = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-3">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("github", { callbackUrl: "/profile" });}}>
                   Sign In with GitHub
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("google", { callbackUrl: "/profile" });}}>
                   Sign In with Google
                 </Button>
               </div>
