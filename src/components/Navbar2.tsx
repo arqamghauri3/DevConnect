@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import {
@@ -22,10 +22,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useTheme } from "@/context/ThemeProvider";
+import Image from "next/image";
 
 const Navbar2 = ({data }: {data: any}) => {
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
+  useEffect(() => {
+    console.log("data",data);
+  }, [data]);
 
   return (
     <header className="bg-white text-black dark:bg-black dark:text-white border-b sticky top-0 z-50">
@@ -82,9 +86,12 @@ const Navbar2 = ({data }: {data: any}) => {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src="/placeholder.svg?height=32&width=32"
+                    <Image
+                      src={data?.user?.image}
                       alt="Profile"
+                      width={32}
+                      height={32}
+                      className="rounded-full"
                     />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
@@ -92,7 +99,7 @@ const Navbar2 = ({data }: {data: any}) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuItem>
-                  <Link href={`/${data?.username}`} className="flex items-center space-x-2">
+                  <Link href={`/${data?.user?.email?.split("@")[0]}`} className="flex items-center space-x-2">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
