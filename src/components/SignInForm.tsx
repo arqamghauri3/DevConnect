@@ -33,6 +33,7 @@ function SignInForm() {
     defaultValues: {
       identifier: "",
       password: "",
+      provider:"credentials"
     },
   });
 

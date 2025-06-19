@@ -47,10 +47,10 @@ const page = () => {
                 <p className="text-center text-lg font-bold">Join today.</p>
               </div>
               <div className="flex flex-col gap-3">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("github", { callbackUrl: "/auth-redirect" });}}>
                   Sign Up with GitHub
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("google", { callbackUrl: "/auth-redirect" });}}>
                   Sign Up with Google
                 </Button>
               </div>
@@ -63,10 +63,10 @@ const page = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-3">
-                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("github", { callbackUrl: "/profile" });}}>
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("github", { callbackUrl: "/auth-redirect" });}}>
                   Sign In with GitHub
                 </Button>
-                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("google", { callbackUrl: "/profile" });}}>
+                <Button variant="outline" className="w-full cursor-pointer" onClick={() => {signIn("google", { callbackUrl: "/auth-redirect" });}}>
                   Sign In with Google
                 </Button>
               </div>

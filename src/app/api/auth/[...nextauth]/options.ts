@@ -56,11 +56,47 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     GitHubProvider({
-    clientId: process.env.GITHUB_ID!,
-    clientSecret: process.env.GITHUB_SECRET!
-  })
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      await dbConnect();
+
+      const currentProvider = account?.provider;
+      const existingUser = await UserModel.findOne({ email: user.email });
+      if (existingUser) {
+        if (existingUser.provider !== currentProvider) {
+          // Optionally, you can throw an error or return false
+          throw new Error(`Please sign in using your original provider: ${existingUser.provider}`);
+        }
+      }
+
+      if (currentProvider != "credentials") {
+        if (!existingUser) {
+          // Create new user if they don't exist
+          await UserModel.create({
+            username: user.email?.split("@")[0], // or use profile.name
+            email: user.email,
+            password: "", // empty for Google users
+            firstName: user?.name || "",
+            lastName:  "",
+            dateOfBirth: new Date(), // or make it optional / null
+            bio: "",
+            profilePicture: user.image,
+            verifyCode: "", // set a dummy value or handle in schema
+            verifyCodeExpiry: new Date(), // same as above
+            isVerified: true,
+            provider: currentProvider,
+          });
+        }
+      }
+      console.log(currentProvider)
+
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token._id = user._id?.toString();
@@ -77,6 +113,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    
   },
   pages: {
     signIn: "/sign-in",

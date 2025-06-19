@@ -40,6 +40,7 @@ function SignUpForm() {
       lastName: "",
       dateOfBirth: new Date(),
       password: "",
+      provider: "credentials"
     },
   });
 
@@ -216,6 +217,7 @@ function SignUpForm() {
             </FormItem>
           )}
         />
+        <input type="hidden" value="credentials" {...form.register("provider")} />
 
         <Button
           type="submit"

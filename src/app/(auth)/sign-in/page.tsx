@@ -42,6 +42,7 @@ function page() {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
+      callbackUrl: "/auth-redirect"
     });
     if (result?.error) {
       toast.error(result.error);
