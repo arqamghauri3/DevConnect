@@ -87,7 +87,7 @@ const Navbar2 = ({data }: {data: any}) => {
                 >
                   <Avatar className="h-8 w-8">
                     <Image
-                      src={data?.user?.image}
+                      src={ data?.user?.profilePicture || "/placeholder.svg"}
                       alt="Profile"
                       width={32}
                       height={32}
@@ -99,7 +99,7 @@ const Navbar2 = ({data }: {data: any}) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuItem>
-                  <Link href={`/${data?.user?.email?.split("@")[0]}`} className="flex items-center space-x-2">
+                  <Link href={`/${data?.user?.username}`} className="flex items-center space-x-2">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>

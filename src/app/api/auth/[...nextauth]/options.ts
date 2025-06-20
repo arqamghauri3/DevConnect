@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             password: "", // empty for Google users
             firstName: user?.name || "",
-            lastName:  "",
+            lastName: "",
             dateOfBirth: new Date(), // or make it optional / null
             bio: "",
             profilePicture: user.image,
@@ -98,30 +98,40 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user }) {
+      // On initial sign in, user is defined
       if (user) {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.username = user.username;
         token.profilePicture = user.profilePicture;
+      } else if (token.email) {
+        // On subsequent requests, fetch user from DB if not present
+        const dbUser = await UserModel.findOne({ email: token.email });
+        if (dbUser) {
+          token._id = dbUser._id?.toString();
+          token.isVerified = dbUser.isVerified;
+          token.username = dbUser.username;
+          token.profilePicture = dbUser.profilePicture;
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user._id = token._id;
-        session.user.isVerified = token.isVerified;
-        session.user.username = token.username;
-        session.user.profilePicture = token.profilePicture;
-      }
-      return session;
+        if (token) {
+          session.user._id = token._id;
+          session.user.isVerified = token.isVerified;
+          session.user.username = token.username;
+          session.user.profilePicture = token.profilePicture;
+        }
+        return session;
+      },
+
     },
-    
-  },
-  pages: {
-    signIn: "/sign-in",
-  },
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-};
+    pages: {
+      signIn: "/sign-in",
+    },
+    session: {
+      strategy: "jwt",
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+  }

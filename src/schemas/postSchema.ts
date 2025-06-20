@@ -8,4 +8,5 @@ export const postSchema = z.object({
   link: z.string().optional(),
   tags: z.array(z.string()).optional(),
   event: z.string().optional(),
+  userId: z.string().optional(),
 });

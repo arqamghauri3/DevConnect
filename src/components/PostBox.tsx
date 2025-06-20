@@ -46,7 +46,7 @@ const PostBox = () => {
     });
     const [selected, setSelected] = useState('Discussion');
     return (
-        <div className='bg-white text-black border border-gray-200 dark:border-white dark:bg-black dark:text-white max-w-xl px-5 py-2 rounded-md ml-4 mt-4 '>
+        <div className='bg-white text-black border border-gray-200 dark:border-white  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>
             <div className='flex gap-3'>
                 <div>
                     <Image className='rounded-full' src="https://kzmfs1j9s5xnomxdm2d3.lite.vusercontent.net/placeholder.svg" alt="profile" width={40} height={40} />
@@ -69,7 +69,7 @@ const PostBox = () => {
                         </DropdownMenu>
 
                     </div>
-                    <div className='grow-1'>
+                    <div >
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mt-2">
                                 <FormField
@@ -81,7 +81,7 @@ const PostBox = () => {
                                                 <textarea
                                                     placeholder="Write your post..."
                                                     {...field}
-                                                    className="w-full px-4 py-4 mt-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
+                                                    className="w-full px-1 py-4 mt-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
                                                     rows={3}
                                                 />
                                             </FormControl>
@@ -92,28 +92,38 @@ const PostBox = () => {
                             </form>
                         </Form>
                     </div>
-                    <div className='flex justify-between items-center'>
-                        <ul className='flex gap-2 text-md'>
-                            <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
-                                <ImageIcon className='w-5 h-5' />
-                                <p>Photo</p>
-                            </li>
-                            <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
-                                <CodeIcon className='w-5 h-5' />
-                                <p>Code</p>
-                            </li>
-                            <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
-                                <LinkIcon className='w-5 h-5' />
-                                <p>Link</p>
-                            </li>
-                            <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
-                                <CalendarIcon className='w-5 h-5' />
-                                <p>Event</p>
-                            </li>
+                    <div className='flex justify-between items-start flex-col '>
+                        <ul className='grid grid-cols-2 md:grid-cols-4 gap-2 text-sm w-full'>
+                            <div className='md:col-span-1'>
+                                <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
+                                    <ImageIcon className='w-4 h-4' />
+                                    <p>Photo</p>
+                                </li>
+                            </div>
+                            <div className='md:col-span-1'>
+                                <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
+                                    <CodeIcon className='w-4 h-4' />
+                                    <p>Code</p>
+                                </li>
+                            </div>
+                            <div className='md:col-span-1'>
+
+                                <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
+                                    <LinkIcon className='w-4 h-4' />
+                                    <p>Link</p>
+                                </li>
+                            </div>
+                            <div className='md:col-span-1'>
+                                <li className='hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-2 py-2 mt-2 flex items-center gap-2'>
+                                    <CalendarIcon className='w-4 h-4' />
+                                    <p>Event</p>
+                                </li>
+                            </div>
+
                         </ul>
-                        <div className='flex gap-2 mt-3'>
-                            <Button className='bg-black text-white dark:bg-white dark:text-black cursor-pointer px-4 py-2 rounded-md'>
-                                <p>Post</p>
+                        <div className='mt-3 w-full'>
+                            <Button className='bg-black text-white dark:bg-white dark:text-black cursor-pointer rounded-md w-full'>
+                                Post
                             </Button>
                         </div>
                     </div>
