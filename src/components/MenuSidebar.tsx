@@ -1,4 +1,4 @@
-import { BookIcon, CalendarIcon, HomeIcon, icons, UsersIcon } from 'lucide-react'
+import { BookIcon, Bookmark, CalendarIcon, HomeIcon, icons, Settings, UsersIcon } from 'lucide-react'
 import React from 'react'
 
 const MenuSidebar = () => {
@@ -22,6 +22,16 @@ const MenuSidebar = () => {
             name: "Events",
             link: "/events",
             icon: <CalendarIcon />
+        },
+        {
+            name: "Settings",
+            link: "/settings",
+            icon: <Settings />
+        },
+        {
+            name: "Bookmarks",
+            link: "/bookmarks",
+            icon: <Bookmark />
         },
 
     ]

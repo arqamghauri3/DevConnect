@@ -2,11 +2,24 @@ import type { NextConfig } from "next";
 
 const nextConfig = {
   images: {
-    domains: [
-      "lh3.googleusercontent.com", // Google profile images
-      "www.gravatar.com"
-      // add any other domains you expect
-    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.gravatar.com',
+      }
+    ]
   },
 };
 
