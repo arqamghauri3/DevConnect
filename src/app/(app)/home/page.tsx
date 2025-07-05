@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import { Post as PostType } from '@/model/Post';
 import { User } from '@/model/User';
+import { Separator } from '@/components/ui/separator'
 
 interface PopulatedPost extends Omit<PostType, 'userId'> {
     userId: Pick<User, 'username' | 'firstName' | 'profilePicture'>;
@@ -43,6 +44,7 @@ const page = () => {
                 </div>
                 <div className="md:col-span-4">
                     <PostBox onPostCreated={fetchPosts} />
+                    <Separator className='mt-7'/>
                     <PostList posts={posts} loading={loading} />
                 </div>
                 <div className='md:col-span-3'>

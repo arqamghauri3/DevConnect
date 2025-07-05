@@ -26,7 +26,7 @@ const PostCard: React.FC<PostCardProps> = ({
   mediaType,
 }) => {
   return (
-    <Card className="w-full max-w-xl bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-gray-800 rounded-lg mt-5">
+    <Card className="w-full bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-gray-800 rounded-lg mt-5">
       <CardHeader className="flex flex-row items-start space-x-4 p-4">
         <Image
           src={avatarUrl}

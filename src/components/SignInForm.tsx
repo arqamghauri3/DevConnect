@@ -50,7 +50,7 @@ function SignInForm() {
 
     if (result?.url) {
       toast.success("Login successful!");
-      router.replace("/profile");
+      router.replace("/home");
     }
 
     setIsSubmitting(false);

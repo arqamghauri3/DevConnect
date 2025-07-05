@@ -6,7 +6,7 @@ import { ArrowDown, ArrowDownIcon, CalendarIcon, CodeIcon, ImageIcon, LinkIcon, 
 import { useForm } from 'react-hook-form'
 import { postSchema } from '@/schemas/postSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { boolean, z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
@@ -15,12 +15,41 @@ import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { ApiResponse } from '@/types/ApiResponse'
 import { useRouter } from 'next/navigation'
+import MyEmojiPicker from './MyEmojiPicker'
+
 
 const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
-    const {data: session} = useSession();
+
+    const postBoxRef = useRef<HTMLDivElement>(null);
+    const { data: session } = useSession();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const [cursorPosition, setCursorPosition] = useState(0);
+    const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+
+
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (document.activeElement === textAreaRef.current && e.key === ' ' && e.shiftKey) {
+                e.preventDefault();
+                setIsEmojiPickerOpen(prev => !prev);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, []);
+
+
+    const handleCaretPosition = () => {
+        if (textAreaRef.current) {
+            setCursorPosition(textAreaRef.current.selectionStart);
+        }
+        console.log(cursorPosition);
+
+    };
+
     const form = useForm<z.infer<typeof postSchema>>({
         resolver: zodResolver(postSchema),
         defaultValues: {
@@ -39,6 +68,12 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
     const [showEventInput, setShowEventInput] = useState(false);
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
 
+    const insertEmoji = (emoji: string) => {
+        const currentPost = form.getValues('post');
+        const newPost = currentPost.substring(0, cursorPosition) + emoji + currentPost.substring(cursorPosition, currentPost.length)
+        form.setValue('post', newPost);
+    }
+
     useEffect(() => {
         form.setValue('category', selected)
     }, [selected, form])
@@ -52,7 +87,6 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
         };
     }, [mediaPreview]);
 
-
     const onSubmit = async (data: z.infer<typeof postSchema>) => {
         setIsSubmitting(true);
         try {
@@ -60,16 +94,16 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
             formData.append('post', data.post);
             formData.append('category', data.category);
 
-            if(data.tags){
+            if (data.tags) {
                 formData.append('tags', JSON.stringify(data.tags));
             }
-            if(data.link){
+            if (data.link) {
                 formData.append('link', data.link);
             }
-            if(data.event){
+            if (data.event) {
                 formData.append('event', data.event);
             }
-            if(data.media){
+            if (data.media) {
                 formData.append('media', data.media);
             }
 
@@ -131,7 +165,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
     }
 
     return (
-        <div className='bg-white text-black border border-gray-200 dark:border-white  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>
+        <div ref={postBoxRef} className='bg-white text-black border border-gray-200 dark:border-white  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>
             <div className='flex gap-3'>
                 <div>
                     <Image className='rounded-full' src={session.user.profilePicture || "https://kzmfs1j9s5xnomxdm2d3.lite.vusercontent.net/placeholder.svg"} alt="profile" width={40} height={40} />
@@ -154,6 +188,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                         </DropdownMenu>
 
                     </div>
+
                     <div >
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mt-2">
@@ -163,18 +198,24 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <textarea
-                                                    placeholder="Write your post..."
-                                                    {...field}
-                                                    className="w-full px-1 py-4 mt-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
-                                                    rows={3}
-                                                />
+                                                <div className='relative'>
+                                                    <textarea
+                                                        placeholder="Write your post..."
+                                                        {...field}
+                                                        className="w-full px-1 py-4 mt-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
+                                                        rows={3}
+                                                        ref={textAreaRef}
+                                                        onKeyUp={handleCaretPosition}
+                                                        onClick={handleCaretPosition}
+                                                    />
+                                                    <div className='absolute top-2 right-2'><MyEmojiPicker onEmojiSelect={insertEmoji} isOpen={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen} /></div>
+                                                </div>
                                             </FormControl>
                                             <FormMessage className="text-red-500 text-sm mt-1" />
                                         </FormItem>
                                     )}
                                 />
-                                 <FormField
+                                <FormField
                                     control={form.control}
                                     name="category"
                                     render={({ field }) => (
@@ -183,7 +224,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                                                 <Input
                                                     type="hidden"
                                                     {...field}
-                                                    
+
                                                 />
                                             </FormControl>
                                         </FormItem>
@@ -230,7 +271,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                                             onClick={cancelMedia}
                                             className='absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75 z-10'
                                         >
-                                            <XIcon className='w-4 h-4'/>
+                                            <XIcon className='w-4 h-4' />
                                         </button>
                                         {form.getValues('media')?.type.startsWith('image/') ? (
                                             <Image src={mediaPreview} alt="Media preview" width={500} height={300} className="rounded-md w-full object-contain max-h-80" />
