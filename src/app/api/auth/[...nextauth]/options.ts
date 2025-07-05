@@ -101,6 +101,8 @@ export const authOptions: NextAuthOptions = {
       // On initial sign in, user is defined
       if (user) {
         token._id = user._id?.toString();
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
         token.isVerified = user.isVerified;
         token.username = user.username;
         token.profilePicture = user.profilePicture;
@@ -109,6 +111,8 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await UserModel.findOne({ email: token.email });
         if (dbUser) {
           token._id = dbUser._id?.toString();
+          token.firstName = dbUser.firstName;
+          token.lastName = dbUser.lastName;
           token.isVerified = dbUser.isVerified;
           token.username = dbUser.username;
           token.profilePicture = dbUser.profilePicture;
@@ -119,6 +123,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
         if (token) {
           session.user._id = token._id;
+          session.user.firstName = token.firstName;
+          session.user.lastName = token.lastName;
           session.user.isVerified = token.isVerified;
           session.user.username = token.username;
           session.user.profilePicture = token.profilePicture;

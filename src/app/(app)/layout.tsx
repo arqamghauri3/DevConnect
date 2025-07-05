@@ -17,7 +17,7 @@ export default function RootLayout({
   const { data: session } = useSession();
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100 dark:bg-black">
       <Navbar2 data={session} />
       {children}
       <Toaster />
