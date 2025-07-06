@@ -16,5 +16,6 @@ export const signUpSchema = z.object({
     required_error: 'Date of birth is required',
   }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters long' }),
-  provider: z.string()
+  provider: z.string(),
+  link: z.string()
 });

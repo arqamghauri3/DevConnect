@@ -13,6 +13,7 @@ export interface User extends Document {
   verifyCodeExpiry: Date;
   isVerified: boolean;
   provider: string;
+  link: string;
 }
 
 const UserSchema: Schema<User> = new Schema({
@@ -39,7 +40,8 @@ const UserSchema: Schema<User> = new Schema({
   provider: {
     type: String,
     required: true
-  }
+  },
+  link: { type: String, required: false, default:""}
 });
 
 const UserModel =

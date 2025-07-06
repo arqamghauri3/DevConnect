@@ -40,7 +40,8 @@ function SignUpForm() {
       lastName: "",
       dateOfBirth: new Date(),
       password: "",
-      provider: "credentials"
+      provider: "credentials",
+      link: ""
     },
   });
 
