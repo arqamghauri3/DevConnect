@@ -44,8 +44,31 @@ const ProfileHeader = ({ username }: any) => {
     const [formData, setFormData] = useState<FormData | null>(null)
     const [isUpdating, setIsUpdating] = useState(false);
     const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+    const [isFollowing, setIsFollowing] = useState(false)
     // Keep file state separate
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFollow = async() => {
+        const follower = session?.user._id;
+        const following = userData?._id
+
+        console.log('follower:', follower);
+        console.log('following:', following);
+
+        const response = await axios.post('/api/follow', {follower, following});
+
+        console.log('response', response);
+        
+
+
+
+        
+        
+    }
+
+    const handleIsFollowing = async() => {
+
+    }
 
     const handleEdit = () => {
         setIsEdit(true);
@@ -193,7 +216,7 @@ const ProfileHeader = ({ username }: any) => {
                             <p>
                                 {!isEdit ? (
                                     <>
-                                        <a href='www.linkedin.com/in/arqam-ghauri/' className='text-blue-500 dark:text-blue-300'>
+                                        <a href={userData?.link || 'Loading'} className='text-blue-500 dark:text-blue-300'>
                                             {userData?.link || 'Loading'}
                                         </a>
                                     </>
@@ -254,7 +277,7 @@ const ProfileHeader = ({ username }: any) => {
                                 </>
                             ) : (
                                 <>
-                                    <Button variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                    <Button onClick={handleFollow} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
                                         <User2Icon />
                                         Follow
                                     </Button>
@@ -271,7 +294,7 @@ const ProfileHeader = ({ username }: any) => {
                         <div className={isEdit ? ('rounded-mg relative w-64') : ('rounded-mg w-64')}>
                             {isEdit ? (
                                 <div className='absolute bottom-0 right-4'>
-                                    <Button variant={'ghost'} className='w-9 h-9 bg-black rounded-full relative'>
+                                    <Button variant={'ghost'} className='w-9 h-9 bg-white  dark:bg-black rounded-full relative'>
                                         <UploadIcon className='rounded-full' />
                                         <Input
                                             type='file'
