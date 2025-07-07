@@ -1,5 +1,27 @@
+import cloudinary from '@/lib/cloudinary';
 import dbConnect from '@/lib/dbConnect'
 import UserModel from '@/model/User';
+
+
+async function uploadToCloudinary(file: File): Promise<string> {
+    const buffer = await file.arrayBuffer();
+    const bytes = Buffer.from(buffer);
+    
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+            { resource_type: 'auto' },
+            (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                if (result) {
+                    return resolve(result.secure_url);
+                }
+                return reject(new Error("Upload failed"));
+            }
+        ).end(bytes);
+    });
+}
 
 export async function GET(request: Request) {
 
@@ -44,43 +66,41 @@ export async function PUT(request: Request) {
     await dbConnect();
 
     try {
-        const data = await request.json()
-        const { username, link } = data
+        const formData = await request.formData();
+        const username = formData.get('username') as string;
+        const link = formData.get('link') as string;
+        const profilePictureFile = formData.get('profilePicture') as File;
+        
+        let updateData: any = { link };
+        
+        // Handle file upload if provided
+        if (profilePictureFile) {
+            const imageUrl = await uploadToCloudinary(profilePictureFile);
+            updateData.profilePicture = imageUrl;
+        }
+        
         const updatedUser = await UserModel.findOneAndUpdate(
-            {
-                username: username
-            },
-            {
-                $set: { link: link }
-            },
+            { username: username },
+            { $set: updateData },
             { new: true }
-        )
-        if (updatedUser != null) {
+        );
+        
+        if (updatedUser) {
             return Response.json({
                 user: updatedUser
             });
         }
-
-        // return Response.json({
-        //     success: false,
-        //     message: 'User Not Found'
-        // },
-        //     {
-        //         status: 500
-        //     })
-
-        return Response.json({
-            data: data
-        })
-    } catch (error) {
+        
         return Response.json({
             success: false,
-            message: 'User Not Fetched'
-        },
-            {
-                status: 500
-            })
-
+            message: 'User Not Found'
+        }, { status: 404 });
+        
+    } catch (error) {
+        console.error('Update error:', error);
+        return Response.json({
+            success: false,
+            message: 'Update Failed'
+        }, { status: 500 });
     }
-
 }
