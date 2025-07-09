@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
     const follow = await FollowModel.findOne({ follower, following });
     console.log(follow);
-    
+
     if (follow) {
       return Response.json({
         success: true,
@@ -70,5 +70,44 @@ export async function GET(request: Request) {
       data: null,
       message: "Internal server error.",
     }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  await dbConnect();
+
+  try {
+
+    const { follower, following } = await request.json()
+    const result = await FollowModel.findOneAndDelete({
+      follower: follower,
+      following: following
+    });
+
+    if(result){
+      return Response.json({
+        success: true,
+        message: "Unfollowed Successfully"
+      },{
+        status: 200
+      })
+    }
+
+    return Response.json({
+      success: false,
+      message: "Follow doesn't exist"
+    },{
+      status: 404
+    })
+
+  } catch (error) {
+    console.error("Error deleting follow relationship: ", error);
+    return Response.json({
+      success: false,
+      message: "Internal Server error."
+    },
+      {
+        status: 500
+      })
   }
 }

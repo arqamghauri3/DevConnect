@@ -57,25 +57,55 @@ const ProfileHeader = ({ username }: any) => {
         queryKey: ["isFollowing", followerId, followingId],
         queryFn: () => fetchIsFollowing(followerId, followingId),
         enabled: !!followerId && !!followingId,
+        refetchOnWindowFocus: false,
+        retry: (failureCount, error: any) => {
+            // Only retry if it's a 500 error
+            return error?.response?.status === 500;
+        },
     });
 
     // 3. Mutations for follow/unfollow
     const followMutation = useMutation({
         mutationFn: () => followUser(followerId, followingId),
-        onSuccess: () => {
+        onMutate: async () => {
+            await queryClient.cancelQueries({ queryKey: ["isFollowing", followerId, followingId] });
+            const previous = queryClient.getQueryData(["isFollowing", followerId, followingId]);
+            queryClient.setQueryData(["isFollowing", followerId, followingId], true); // Set to following
+            return { previous };
+        },
+        onError: (err, variables, context) => {
+            if (context?.previous !== undefined) {
+                queryClient.setQueryData(["isFollowing", followerId, followingId], context.previous);
+            }
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
         },
     });
 
     const unfollowMutation = useMutation({
         mutationFn: () => unfollowUser(followerId, followingId),
-        onSuccess: () => {
+        // Optimistically update the cache before the mutation happens
+        onMutate: async () => {
+            await queryClient.cancelQueries({ queryKey: ["isFollowing", followerId, followingId] });
+            const previous = queryClient.getQueryData(["isFollowing", followerId, followingId]);
+            queryClient.setQueryData(["isFollowing", followerId, followingId], false); // Set to not following
+            return { previous };
+        },
+        // If the mutation fails, roll back
+        onError: (err, variables, context) => {
+            if (context?.previous !== undefined) {
+                queryClient.setQueryData(["isFollowing", followerId, followingId], context.previous);
+            }
+        },
+        // After mutation, refetch to ensure data is correct
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
         },
     });
 
     const editProfileMutation = useMutation({
-        mutationFn: () => editProfile(username, userData?.link, selectedFile),
+        mutationFn: () => editProfile(username, formData?.link, selectedFile),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["user", username] });
             setIsEdit(false)
@@ -322,7 +352,7 @@ const ProfileHeader = ({ username }: any) => {
                                     {isFollowing ? (
                                         <>
                                             <>
-                                                <Button variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                                <Button  onClick={() => unfollowMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
                                                     <User2Icon />
                                                     UnFollow
                                                 </Button>
@@ -330,7 +360,7 @@ const ProfileHeader = ({ username }: any) => {
                                         </>
                                     ) : (
                                         <>
-                                            <Button onClick={() => followMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                            <Button  onClick={() => followMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
                                                 <User2Icon />
                                                 Follow
                                             </Button>
