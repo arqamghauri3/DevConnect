@@ -27,9 +27,7 @@ import Image from "next/image";
 const Navbar2 = ({data }: {data: any}) => {
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
-  useEffect(() => {
-    console.log("data",data);
-  }, [data]);
+  
 
   return (
     <header className="bg-white text-black dark:bg-black dark:text-white border-b sticky top-0 z-50">

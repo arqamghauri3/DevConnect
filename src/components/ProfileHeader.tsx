@@ -9,23 +9,9 @@ import { useParams } from 'next/navigation'
 import axios from 'axios'
 import { boolean } from 'zod'
 import { Input } from './ui/input'
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
+import { editProfile, fetchIsFollowing, fetchUser, followUser, unfollowUser } from '@/app/api/(profile)/profile'
 
-interface UserData {
-    _id: string;
-    username: string;
-    password: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    dateOfBirth: Date;
-    bio: string;
-    profilePicture: string;
-    verifyCode: string;
-    verifyCodeExpiry: Date;
-    isVerified: boolean;
-    provider: string;
-    link: string;
-}
 
 interface FormData {
     username: string;
@@ -36,39 +22,93 @@ interface FormData {
 
 const ProfileHeader = ({ username }: any) => {
     const { data: session } = useSession();
-    const [userData, setUserData] = useState<UserData | null>(null);
+    // const [userData, setUserData] = useState<UserData | null>(null);
+    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false)
-    const [isUser, setIsUser] = useState(false);
+    // const [isUser, setIsUser] = useState(false);
     const [isUserExist, setIsUserExist] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
     const [formData, setFormData] = useState<FormData | null>(null)
     const [isUpdating, setIsUpdating] = useState(false);
     const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
-    const [isFollowing, setIsFollowing] = useState(false)
-    // Keep file state separate
+    // const [isFollowing, setIsFollowing] = useState(false)
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    const handleFollow = async() => {
-        const follower = session?.user._id;
-        const following = userData?._id
 
-        console.log('follower:', follower);
-        console.log('following:', following);
+    useEffect(() => {
+        return () => {
+            if (profileImagePreview) {
+                URL.revokeObjectURL(profileImagePreview);
+            }
+        };
+    }, [profileImagePreview]);
 
-        const response = await axios.post('/api/follow', {follower, following});
+    const { data: userData, isLoading: userLoading, isError: userError } = useQuery({
+        queryKey: ["user", username],
+        queryFn: () => fetchUser(username),
+        enabled: !!username
 
-        console.log('response', response);
-        
+    })
 
+    const followerId = session?.user?._id;
+    const followingId = userData?._id;
 
+    const { data: isFollowing, isLoading: followLoading } = useQuery({
+        queryKey: ["isFollowing", followerId, followingId],
+        queryFn: () => fetchIsFollowing(followerId, followingId),
+        enabled: !!followerId && !!followingId,
+    });
 
-        
-        
-    }
+    // 3. Mutations for follow/unfollow
+    const followMutation = useMutation({
+        mutationFn: () => followUser(followerId, followingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
+        },
+    });
 
-    const handleIsFollowing = async() => {
+    const unfollowMutation = useMutation({
+        mutationFn: () => unfollowUser(followerId, followingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
+        },
+    });
 
-    }
+    const editProfileMutation = useMutation({
+        mutationFn: () => editProfile(username, userData?.link, selectedFile),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["user", username] });
+            setIsEdit(false)
+        }
+    })
+
+    if (userLoading) return <div>Loading...</div>;
+    if (userError || !userData) return <div>User not found.</div>;
+
+    const isUser = session?.user?.username === userData.username;
+    // const handleFollow = async () => {
+
+    //     console.log('follower:', followerId);
+    //     console.log('following:', followingId);
+    //     const response = await axios.post('/api/follow', { followerId, followingId });
+    //     console.log('response', response);
+    // }
+
+    // const handleIsFollowing = async () => {
+    //     try {
+    //         const follower = session?.user._id;
+    //         const following = userData?._id
+    //         if (follower && following) {
+    //             const response = await axios.get(`/api/follow?follower=${follower}&following=${following}`)
+    //             console.log(response);
+    //             setIsFollowing(response.data.success === true);
+    //         }
+
+    //     } catch (error) {
+
+    //     }
+    // }
+
 
     const handleEdit = () => {
         setIsEdit(true);
@@ -90,103 +130,105 @@ const ProfileHeader = ({ username }: any) => {
         }
     };
 
-    const handleSubmit = async () => {
-        setIsUpdating(true);
-        
-        try {
-            const formDataToSend = new FormData();
-            formDataToSend.append('username', username);
-            formDataToSend.append('link', formData?.link || '');
-            
-            if (selectedFile) {
-                formDataToSend.append('profilePicture', selectedFile);
-            }
-            
-            const response = await axios.put(`/api/user`, formDataToSend, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            
-            if (response.data.user) {
-                setUserData(response.data.user);
-                setProfileImagePreview(null);
-                setSelectedFile(null);
-                console.log('Profile updated successfully!');
-            }
-            
-            setIsEdit(false);
-            
-        } catch (error) {
-            console.error('Error updating user:', error);
-            alert('Failed to update profile. Please try again.');
-        } finally {
-            setIsUpdating(false);
-        }
-    };
+    // const handleSubmit = async () => {
+    //     setIsUpdating(true);
 
-    const getUser = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`/api/user?username=${username}`);
-            console.log('API Response:', response.data);
+    //     try {
+    //         const formDataToSend = new FormData();
+    //         formDataToSend.append('username', username);
+    //         formDataToSend.append('link', formData?.link || '');
 
-            // Handle API-level errors (like "User Not Found")
-            if (response.data.success === false) {
-                console.log('❌ User not found:', response.data.message);
-                setIsUserExist(false);
-                setUserData(null);
-                return;
-            }
+    //         if (selectedFile) {
+    //             formDataToSend.append('profilePicture', selectedFile);
+    //         }
 
-            // Handle successful response
-            if (response.data.username) {
-                console.log('✅ User found:', response.data.username);
-                setUserData(response.data.username);
-                setIsUserExist(true);
-            }
+    //         const response = await axios.put(`/api/user`, formDataToSend, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         });
 
-        } catch (error) {
-            // Handle network errors (like 500 status)
-            console.error('❌ Network error:', error);
-            if (axios.isAxiosError(error)) {
-                console.log('Error response:', error.response?.data);
-            }
-            setIsUserExist(false);
-            setUserData(null);
-        } finally {
-            setLoading(false);
-        }
-    }
+    //         if (response.data.user) {
+    //             // setUserData(response.data.user);
+    //             setProfileImagePreview(null);
+    //             setSelectedFile(null);
+    //             console.log('Profile updated successfully!');
+    //         }
+
+    //         setIsEdit(false);
+
+    //     } catch (error) {
+    //         console.error('Error updating user:', error);
+    //         alert('Failed to update profile. Please try again.');
+    //     } finally {
+    //         setIsUpdating(false);
+    //     }
+    // };
 
 
 
-    useEffect(() => {
-        getUser()
+    // const getUser = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const response = await axios.get(`/api/user?username=${username}`);
+    //         console.log('API Response:', response.data);
 
-    }, [])
+    //         // Handle API-level errors (like "User Not Found")
+    //         if (response.data.success === false) {
+    //             console.log('❌ User not found:', response.data.message);
+    //             setIsUserExist(false);
+    //             setUserData(null);
+    //             return;
+    //         }
 
-    useEffect(() => {
-        if (userData && session?.user?.username) {
-            console.log('ud', userData.username);
-            console.log('ses', session.user.username);
+    //         // Handle successful response
+    //         if (response.data.username) {
+    //             console.log('✅ User found:', response.data.username);
+    //             setUserData(response.data.username);
+    //             setIsUserExist(true);
+    //         }
 
-            if (userData.username === session.user.username) {
-                setIsUser(true);
-            }
-        }
-    }, [userData, session?.user?.username]);
+    //     } catch (error) {
+    //         // Handle network errors (like 500 status)
+    //         console.error('❌ Network error:', error);
+    //         if (axios.isAxiosError(error)) {
+    //             console.log('Error response:', error.response?.data);
+    //         }
+    //         setIsUserExist(false);
+    //         setUserData(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
 
-    useEffect(() => {
-        return () => {
-            if (profileImagePreview) {
-                URL.revokeObjectURL(profileImagePreview);
-            }
-        };
-    }, [profileImagePreview]);
+
+
+    // useEffect(() => {
+    //     getUser()
+
+
+    // }, [])
+
+    // useEffect(() => {
+    //     if (userData && session?.user?.username) {
+    //         console.log('ud', userData.username);
+    //         console.log('ses', session.user.username);
+
+    //         if (userData.username === session.user.username) {
+    //             setIsUser(true);
+    //         }
+    //     }
+    // }, [userData, session?.user?.username]);
+
+
+    // useEffect(() => {
+    //     if (session?.user?._id && userData?._id) {
+    //         handleIsFollowing()
+    //     }
+    // }, [session?.user?._id, userData?._id])
 
     return <>
-        {isUserExist ? (
+        {!userError ? (
             <>
                 <div className='mt-8 max-w-6xl rounded-lg mx-auto bg-white text-black dark:bg-black dark:text-white border border-gray-300 dark:border-gray-700'>
                     <div className='rounded-mg'>
@@ -244,7 +286,7 @@ const ProfileHeader = ({ username }: any) => {
                                     {isEdit ? (
                                         <Button
                                             variant={'outline'}
-                                            onClick={handleSubmit}
+                                            onClick={() => editProfileMutation.mutate()}
                                             disabled={isUpdating}
                                             className='font-semibold h-10 w-28 bg-white text-black dark:bg-black dark:text-white'
                                         >
@@ -277,10 +319,24 @@ const ProfileHeader = ({ username }: any) => {
                                 </>
                             ) : (
                                 <>
-                                    <Button onClick={handleFollow} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
-                                        <User2Icon />
-                                        Follow
-                                    </Button>
+                                    {isFollowing ? (
+                                        <>
+                                            <>
+                                                <Button variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                                    <User2Icon />
+                                                    UnFollow
+                                                </Button>
+                                            </>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button onClick={() => followMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                                <User2Icon />
+                                                Follow
+                                            </Button>
+                                        </>
+                                    )}
+
                                     <Button variant={'outline'} className='font-semibold h-10 w-28 bg-white text-black dark:bg-black dark:text-white '>
                                         <MessageCircle />
                                         Message
