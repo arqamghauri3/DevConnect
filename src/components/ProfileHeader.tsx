@@ -67,7 +67,7 @@ const ProfileHeader = ({ username }: any) => {
     const { data: followData, isLoading: followDataLoading } = useQuery({
         queryKey: ["followData", followingId],
         queryFn: () => getFollowersFollowing(followingId),
-        enabled: !!followingId ,
+        enabled: !!followingId,
         refetchOnWindowFocus: false,
         retry: (failureCount, error: any) => {
             // Only retry if it's a 500 error
@@ -362,7 +362,7 @@ const ProfileHeader = ({ username }: any) => {
                                     {isFollowing ? (
                                         <>
                                             <>
-                                                <Button  onClick={() => unfollowMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                                <Button onClick={() => unfollowMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
                                                     <User2Icon />
                                                     UnFollow
                                                 </Button>
@@ -370,7 +370,7 @@ const ProfileHeader = ({ username }: any) => {
                                         </>
                                     ) : (
                                         <>
-                                            <Button  onClick={() => followMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
+                                            <Button onClick={() => followMutation.mutate()} variant={'outline'} className='font-bold h-10 w-28 bg-black text-white dark:bg-white dark:text-black dark:hover:text-white'>
                                                 <User2Icon />
                                                 Follow
                                             </Button>
@@ -386,7 +386,7 @@ const ProfileHeader = ({ username }: any) => {
 
                         </div>
                     </div>
-                    <div className='ml-10 mt-2 mb-2 flex items-center '>
+                    <div className='ml-10 mt-2 flex items-center'>
                         <div className={isEdit ? ('rounded-mg relative w-64') : ('rounded-mg w-64')}>
                             {isEdit ? (
                                 <div className='absolute bottom-0 right-4'>
@@ -411,12 +411,29 @@ const ProfileHeader = ({ username }: any) => {
                         </div>
                         <div className='mx-10 mt-1 text-gray-600'>
                             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum nisi deserunt aliquid officiis laboriosam. Dignissimos aliquid veritatis, quis architecto libero, reiciendis unde magni corrupti illo, laborum non maiores eum rerum?</p>
-                           
+
                         </div>
 
+
+                    </div>
+                    <div className='flex justify-end mb-5'>
+                        <div className='w-[58rem]'>
+                            <div className='flex gap-10'>
+                                <div className='flex flex-col items-center'>
+                                    <p className='text-xl font-semibold'>{followData?.data.followerCount}</p>
+                                    <p className='text-md text-gray-600'>Following</p>
+                                </div>
+
+                                <div className='flex flex-col items-center'>
+                                    <p className='text-xl font-semibold'>{followData?.data.followingCount}</p>
+                                    <p className='text-md text-gray-600'>Followers</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                </div></>) : (
+                </div>
+            </>) : (
             <>
                 Error Page
             </>
