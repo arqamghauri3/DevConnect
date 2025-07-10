@@ -10,13 +10,13 @@ import axios from 'axios'
 import { boolean } from 'zod'
 import { Input } from './ui/input'
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
-import { editProfile, fetchIsFollowing, fetchUser, followUser, unfollowUser } from '@/app/api/(profile)/profile'
+import { editProfile, fetchIsFollowing, fetchUser, followUser, normalizeLink, unfollowUser } from '@/app/api/(profile)/profile'
 
 
 interface FormData {
     username: string;
     link: string;
-    profilePicture?: File; // Make optional
+    profilePicture?: File;
 }
 
 
@@ -288,7 +288,7 @@ const ProfileHeader = ({ username }: any) => {
                             <p>
                                 {!isEdit ? (
                                     <>
-                                        <a href={userData?.link || 'Loading'} className='text-blue-500 dark:text-blue-300'>
+                                        <a href={normalizeLink(userData?.link) || 'Loading'} className='text-blue-500 dark:text-blue-300' target='_blank' rel='noopener noreferrer'>
                                             {userData?.link || 'Loading'}
                                         </a>
                                     </>

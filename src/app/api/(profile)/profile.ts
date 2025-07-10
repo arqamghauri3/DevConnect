@@ -30,7 +30,7 @@ export const editProfile = async (username: string, link: string | undefined, pr
         formDataToSend.append('profilePicture', profilePicture);
     }
     console.log(formDataToSend);
-    
+
 
     return await axios.put(`/api/user`, formDataToSend, {
         headers: {
@@ -38,3 +38,13 @@ export const editProfile = async (username: string, link: string | undefined, pr
         }
     });
 }
+
+export const normalizeLink = (link: string) => {
+    if (!link) return '';
+    if (link.startsWith('http://') || link.startsWith('https://')) {
+        return link;
+    }
+    else {
+        return `https://${link}`
+    }
+} 
