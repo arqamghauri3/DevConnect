@@ -91,6 +91,7 @@ const ProfileHeader = ({ username }: any) => {
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
+            queryClient.invalidateQueries({ queryKey: ["followData", followingId] }); // <--- Add this line
         },
     });
 
@@ -112,6 +113,7 @@ const ProfileHeader = ({ username }: any) => {
         // After mutation, refetch to ensure data is correct
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["isFollowing", followerId, followingId] });
+            queryClient.invalidateQueries({ queryKey: ["followData", followingId] }); // <--- Add this line
         },
     });
 
