@@ -26,3 +26,4 @@ Thumbs.db
 # Optional: IDE specific files
 .idea
 .vscode
+commit_reminder.py

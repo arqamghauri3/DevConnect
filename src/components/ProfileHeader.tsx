@@ -10,7 +10,7 @@ import axios from 'axios'
 import { boolean } from 'zod'
 import { Input } from './ui/input'
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
-import { editProfile, fetchIsFollowing, fetchUser, followUser, normalizeLink, unfollowUser } from '@/app/api/(profile)/profile'
+import { editProfile, fetchIsFollowing, fetchUser, followUser, getFollowersFollowing, normalizeLink, unfollowUser } from '@/app/api/(profile)/profile'
 
 
 interface FormData {
@@ -57,6 +57,17 @@ const ProfileHeader = ({ username }: any) => {
         queryKey: ["isFollowing", followerId, followingId],
         queryFn: () => fetchIsFollowing(followerId, followingId),
         enabled: !!followerId && !!followingId,
+        refetchOnWindowFocus: false,
+        retry: (failureCount, error: any) => {
+            // Only retry if it's a 500 error
+            return error?.response?.status === 500;
+        },
+    });
+
+    const { data: followData, isLoading: followDataLoading } = useQuery({
+        queryKey: ["followData", followingId],
+        queryFn: () => getFollowersFollowing(followingId),
+        enabled: !!followingId ,
         refetchOnWindowFocus: false,
         retry: (failureCount, error: any) => {
             // Only retry if it's a 500 error
@@ -270,7 +281,6 @@ const ProfileHeader = ({ username }: any) => {
                             className="w-full h-48 object-cover"
                         />
 
-
                     </div>
                     <div className='flex justify-between px-10 mt-5 items-center'>
                         <div className=''>
@@ -401,6 +411,7 @@ const ProfileHeader = ({ username }: any) => {
                         </div>
                         <div className='mx-10 mt-1 text-gray-600'>
                             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum nisi deserunt aliquid officiis laboriosam. Dignissimos aliquid veritatis, quis architecto libero, reiciendis unde magni corrupti illo, laborum non maiores eum rerum?</p>
+                           
                         </div>
 
                     </div>

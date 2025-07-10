@@ -48,3 +48,12 @@ export const normalizeLink = (link: string) => {
         return `https://${link}`
     }
 } 
+
+
+export const getFollowersFollowing = async(userID: string | undefined) => {
+    const { data } = await axios.get(`/api/follow/all?follower=${userID}&following=${userID}`);
+    console.log(data);
+    return data;
+    
+    
+}
