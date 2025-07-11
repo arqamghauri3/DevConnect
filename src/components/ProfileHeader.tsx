@@ -289,7 +289,9 @@ const ProfileHeader = ({ username }: any) => {
                             <h1 className='text-2xl font-bold'>
                                 {userData?.firstName || 'Loading'} {userData?.lastName || ''}
                             </h1>
-                            <p className='text-gray-500 text-lg'>@{userData?.username || ''}</p>
+                            <a href={`https://localhost:3000/${userData?.username || ''}`}>
+                                <p className='text-gray-500 text-lg'>@{userData?.username || ''}</p>
+                            </a>
                         </div>
                         <div className='flex gap-2 text-gray-500'>
                             <MapPinnedIcon />
