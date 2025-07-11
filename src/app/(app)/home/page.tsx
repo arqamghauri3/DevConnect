@@ -25,6 +25,8 @@ const page = () => {
         try {
             const response = await axios.get('/api/posts');
             setPosts(response.data);
+            console.log(response);
+            
         } catch (error) {
             console.error("Failed to fetch posts", error);
         } finally {

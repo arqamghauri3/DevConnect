@@ -5,6 +5,8 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 
 import { MessageCircle, Repeat, Heart, BarChart2, Upload } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 interface PostCardProps {
   avatarUrl: string;
@@ -14,6 +16,7 @@ interface PostCardProps {
   content: string;
   mediaUrl?: string;
   mediaType?: 'photo' | 'video';
+  link?: string
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -24,7 +27,22 @@ const PostCard: React.FC<PostCardProps> = ({
   content,
   mediaUrl,
   mediaType,
+  link
 }) => {
+
+  const { data: likeCount } = useQuery({
+    queryKey: ["likeCount", link],
+    queryFn: () => fetchLikes(link),
+    enabled: !!link,
+    refetchOnWindowFocus: false
+      
+  })
+
+  const fetchLikes = async(post: string | undefined) => {
+    const response = axios.get(`/api/like?post=${post}`)
+    return response
+  }
+
   return (
     <Card className="w-full bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-gray-800 rounded-lg mt-5">
       <CardHeader className="flex flex-row items-start space-x-4 p-4">
@@ -77,7 +95,7 @@ const PostCard: React.FC<PostCardProps> = ({
         </button>
         <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500">
           <Heart size={20} />
-          <span>0</span>
+          <span>{likeCount?.data.data}</span>
         </button>
         <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
           <BarChart2 size={20} />

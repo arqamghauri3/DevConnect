@@ -38,6 +38,7 @@ const PostList = ({ posts, loading }: PostListProps) => {
                     content={post.post}
                     mediaUrl={post.mediaUrl}
                     mediaType={post.mediaType}
+                    link={post._id}
                 />
             ))}
         </div>
