@@ -7,6 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import { MessageCircle, Repeat, Heart, BarChart2, Upload } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
 
 interface PostCardProps {
   avatarUrl: string;
@@ -41,7 +45,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   })
 
-  const {data: isUserLike, refetch: refetchIsUserLike } = useQuery({
+  const { data: isUserLike, refetch: refetchIsUserLike } = useQuery({
     queryKey: ["isUserLike", user_id, post_id],
     queryFn: () => fetchCurrentUserLike(user_id, post_id),
     enabled: !!user_id && !!post_id,
@@ -54,25 +58,25 @@ const PostCard: React.FC<PostCardProps> = ({
   }
 
   const fetchCurrentUserLike = async (user_id: string | undefined, post: string | undefined) => {
-    
+
     const response = await axios.get(`/api/like/user?user=${user_id}&post=${post}`)
-    
-    if(response.data.data != null){
+
+    if (response.data.data != null) {
       return true
     }
-    
+
     return false
   }
 
-  const handleLike = async(action: string)=>{
-    if(action === "like"){
-      const response = await axios.post('/api/like',{post: post_id, user: user_id} )
+  const handleLike = async (action: string) => {
+    if (action === "like") {
+      const response = await axios.post('/api/like', { post: post_id, user: user_id })
       console.log("like");
-      
+
     }
-    else{
-      const response = await axios.delete('/api/like', { 
-        data: { post: post_id, user: user_id } 
+    else {
+      const response = await axios.delete('/api/like', {
+        data: { post: post_id, user: user_id }
       })
       console.log("unlike");
     }
@@ -96,6 +100,59 @@ const PostCard: React.FC<PostCardProps> = ({
             <span className="text-gray-500">@{handle}</span>
             <span className="text-gray-500">·</span>
             <span className="text-gray-500">{timestamp}</span>
+          </div>
+        </div>
+        <div className='w-full flex justify-end'>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className='text-red-500'>. . .</Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="leading-none font-medium">Dimensions</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Set the dimensions for the layer.
+                    </p>
+                  </div>
+                  <div className="grid gap-2">
+                    <div className="grid grid-cols-3 items-center gap-4">
+                      <Label htmlFor="width">Width</Label>
+                      <Input
+                        id="width"
+                        defaultValue="100%"
+                        className="col-span-2 h-8"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 items-center gap-4">
+                      <Label htmlFor="maxWidth">Max. width</Label>
+                      <Input
+                        id="maxWidth"
+                        defaultValue="300px"
+                        className="col-span-2 h-8"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 items-center gap-4">
+                      <Label htmlFor="height">Height</Label>
+                      <Input
+                        id="height"
+                        defaultValue="25px"
+                        className="col-span-2 h-8"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 items-center gap-4">
+                      <Label htmlFor="maxHeight">Max. height</Label>
+                      <Input
+                        id="maxHeight"
+                        defaultValue="none"
+                        className="col-span-2 h-8"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </CardHeader>
@@ -132,13 +189,14 @@ const PostCard: React.FC<PostCardProps> = ({
           <button >
             <Repeat size={20} />
           </button>
-        </div>
           <span>0</span>
-        <div className={isUserLike ? 'flex items-center space-x-2 hover:text-shadow-red-500 text-red-500' : 'flex items-center space-x-2 hover:text-shadow-red-500 text-gray-500' }>
-          <button onClick={() => !isUserLike ? handleLike("like") : handleLike("unlike") }>
-            <Heart 
-              size={20} 
-              fill={isUserLike ? "red" : "none"} 
+
+        </div>
+        <div className={`flex items-center space-x-2 hover:text-red-500 cursor-pointer ${isUserLike ? 'text-red-500' : 'text-gray-500'}`}>
+          <button className=' cursor-pointer' onClick={() => !isUserLike ? handleLike("like") : handleLike("unlike")}>
+            <Heart
+              size={20}
+              fill={isUserLike ? "red" : "none"}
             />
           </button>
           <span>{likeCount?.data.data}</span>
