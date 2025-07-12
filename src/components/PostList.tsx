@@ -1,12 +1,14 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import PostCard from './PostCard'
 import { Post as PostType } from '@/model/Post';
 import { User } from '@/model/User';
+import { useSession } from 'next-auth/react';
+
 
 interface PopulatedPost extends Omit<PostType, 'userId'> {
-    userId: Pick<User, 'username' | 'firstName' | 'profilePicture'>;
+    userId: Pick<User, 'username' | 'firstName' | 'profilePicture'>
     _id: string;
     createdAt: string;
 }
@@ -17,6 +19,9 @@ interface PostListProps {
 }
 
 const PostList = ({ posts, loading }: PostListProps) => {
+
+    const {data: session} = useSession()
+
 
     if (loading) {
         return <div className='text-center mt-4'>Loading posts...</div>;
@@ -38,7 +43,8 @@ const PostList = ({ posts, loading }: PostListProps) => {
                     content={post.post}
                     mediaUrl={post.mediaUrl}
                     mediaType={post.mediaType}
-                    link={post._id}
+                    post_id={post._id}
+                    user_id={session?.user._id}
                 />
             ))}
         </div>

@@ -83,3 +83,51 @@ export async function GET(request: Request) {
     }
 
 }
+
+
+export async function DELETE(request: Request) {
+    await dbConnect();
+    try {
+        const { post, user } = await request.json();
+
+        if (!post || !user) {
+            return Response.json({
+                success: true,
+                message: "Missing fields",
+            },
+                { status: 400 }
+            )
+        }
+
+        const result = await LikeModel.findOneAndDelete({
+            user: user,
+            post: post
+        });
+
+        if (result) {
+            return Response.json({
+                success: true,
+                message: "Unliked Successfully"
+            }, {
+                status: 200
+            })
+        }
+        else {
+            return Response.json({
+                success: false,
+                message: "Like doesn't exist"
+            }, {
+                status: 404
+            })
+        }
+
+    } catch (error) {
+        return Response.json({
+            success: false,
+            message: "Internal network error"
+        },
+            {
+                status: 500
+            })
+    }
+}

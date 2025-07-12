@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 
 import { MessageCircle, Repeat, Heart, BarChart2, Upload } from 'lucide-react';
@@ -16,7 +16,8 @@ interface PostCardProps {
   content: string;
   mediaUrl?: string;
   mediaType?: 'photo' | 'video';
-  link?: string
+  post_id?: string
+  user_id?: string
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -27,20 +28,56 @@ const PostCard: React.FC<PostCardProps> = ({
   content,
   mediaUrl,
   mediaType,
-  link
+  post_id,
+  user_id
 }) => {
 
-  const { data: likeCount } = useQuery({
-    queryKey: ["likeCount", link],
-    queryFn: () => fetchLikes(link),
-    enabled: !!link,
+
+  const { data: likeCount, refetch: refetchLikeCount } = useQuery({
+    queryKey: ["likeCount", post_id],
+    queryFn: () => fetchLikes(post_id),
+    enabled: !!post_id,
     refetchOnWindowFocus: false
-      
+
   })
 
-  const fetchLikes = async(post: string | undefined) => {
-    const response = axios.get(`/api/like?post=${post}`)
+  const {data: isUserLike, refetch: refetchIsUserLike } = useQuery({
+    queryKey: ["isUserLike", user_id, post_id],
+    queryFn: () => fetchCurrentUserLike(user_id, post_id),
+    enabled: !!user_id && !!post_id,
+    refetchOnWindowFocus: false
+  })
+
+  const fetchLikes = async (post: string | undefined) => {
+    const response = await axios.get(`/api/like?post=${post}`)
     return response
+  }
+
+  const fetchCurrentUserLike = async (user_id: string | undefined, post: string | undefined) => {
+    
+    const response = await axios.get(`/api/like/user?user=${user_id}&post=${post}`)
+    
+    if(response.data.data != null){
+      return true
+    }
+    
+    return false
+  }
+
+  const handleLike = async(action: string)=>{
+    if(action === "like"){
+      const response = await axios.post('/api/like',{post: post_id, user: user_id} )
+      console.log("like");
+      
+    }
+    else{
+      const response = await axios.delete('/api/like', { 
+        data: { post: post_id, user: user_id } 
+      })
+      console.log("unlike");
+    }
+    refetchLikeCount()
+    refetchIsUserLike()
   }
 
   return (
@@ -85,25 +122,38 @@ const PostCard: React.FC<PostCardProps> = ({
         )}
       </CardContent>
       <CardFooter className="flex justify-around p-2 border-t border-gray-200 dark:border-gray-800">
-        <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
-          <MessageCircle size={20} />
+        <div className="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
+          <button >
+            <MessageCircle size={20} />
+          </button>
           <span>0</span>
-        </button>
-        <button className="flex items-center space-x-2 text-gray-500 hover:text-green-500">
-          <Repeat size={20} />
+        </div>
+        <div className="flex items-center space-x-2 text-gray-500 hover:text-green-500">
+          <button >
+            <Repeat size={20} />
+          </button>
+        </div>
           <span>0</span>
-        </button>
-        <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500">
-          <Heart size={20} />
+        <div className={isUserLike ? 'flex items-center space-x-2 hover:text-shadow-red-500 text-red-500' : 'flex items-center space-x-2 hover:text-shadow-red-500 text-gray-500' }>
+          <button onClick={() => !isUserLike ? handleLike("like") : handleLike("unlike") }>
+            <Heart 
+              size={20} 
+              fill={isUserLike ? "red" : "none"} 
+            />
+          </button>
           <span>{likeCount?.data.data}</span>
-        </button>
-        <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
-          <BarChart2 size={20} />
+        </div>
+        <div className="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
+          <button >
+            <BarChart2 size={20} />
+          </button>
           <span>0</span>
-        </button>
-        <button className="text-gray-500 hover:text-blue-500">
-          <Upload size={20} />
-        </button>
+        </div>
+        <div className="text-gray-500 hover:text-blue-500">
+          <button >
+            <Upload size={20} />
+          </button>
+        </div>
       </CardFooter>
     </Card>
   );
