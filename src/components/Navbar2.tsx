@@ -30,7 +30,7 @@ const Navbar2 = ({data }: {data: any}) => {
   
 
   return (
-    <header className="bg-white text-black dark:bg-black dark:text-white border-b sticky top-0 z-50">
+    <header className="bg-white text-black dark:bg-black dark:text-white border-b dark:border-zinc-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

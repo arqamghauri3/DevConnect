@@ -26,7 +26,7 @@ const TrendingSidebar = () => {
 
     ]
     return (
-        <div className='bg-white text-black border border-gray-200 dark:border-white dark:bg-black dark:text-white px-5 py-4 rounded-md ml-4 mr-4 md:ml-0 mt-4 '>
+        <div className='bg-white text-black border border-gray-200 dark:border-zinc-800 dark:bg-black dark:text-white px-5 py-4 rounded-md ml-4 mr-4 md:ml-0 mt-4 '>
             <div className='flex gap-3 items-center mt-2'>
                 <TrendingUp />
                 <h1 className='text-lg font-semibold'>Trending Topics</h1>

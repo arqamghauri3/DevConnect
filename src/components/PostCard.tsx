@@ -4,13 +4,14 @@ import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 
-import { MessageCircle, Repeat, Heart, BarChart2, Upload } from 'lucide-react';
+import { MessageCircle, Repeat, Heart, BarChart2, Upload, EllipsisIcon, Delete, DeleteIcon, Trash } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 interface PostCardProps {
   avatarUrl: string;
@@ -85,7 +86,7 @@ const PostCard: React.FC<PostCardProps> = ({
   }
 
   return (
-    <Card className="w-full bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-gray-800 rounded-lg mt-5">
+    <Card className="w-full bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-zinc-800 rounded-lg mt-5">
       <CardHeader className="flex flex-row items-start space-x-4 p-4">
         <Image
           src={avatarUrl}
@@ -106,51 +107,46 @@ const PostCard: React.FC<PostCardProps> = ({
           <div>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className='text-red-500'>. . .</Button>
+                <Button variant="ghost" className='text-gray-500'>
+                  <EllipsisIcon />
+                </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="leading-none font-medium">Dimensions</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Set the dimensions for the layer.
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="width">Width</Label>
-                      <Input
-                        id="width"
-                        defaultValue="100%"
-                        className="col-span-2 h-8"
-                      />
+              <PopoverContent className="w-80 bg-black ">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" className='flex gap-2 w-full justify-start text-red-400'>
+                      <Trash/>
+                      Delete Post
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Share link</DialogTitle>
+                      <DialogDescription>
+                        Anyone who has this link will be able to view this.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center gap-2">
+                      <div className="grid flex-1 gap-2">
+                        <Label htmlFor="link" className="sr-only">
+                          Link
+                        </Label>
+                        <Input
+                          id="link"
+                          defaultValue="https://ui.shadcn.com/docs/installation"
+                          readOnly
+                        />
+                      </div>
                     </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="maxWidth">Max. width</Label>
-                      <Input
-                        id="maxWidth"
-                        defaultValue="300px"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="height">Height</Label>
-                      <Input
-                        id="height"
-                        defaultValue="25px"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="maxHeight">Max. height</Label>
-                      <Input
-                        id="maxHeight"
-                        defaultValue="none"
-                        className="col-span-2 h-8"
-                      />
-                    </div>
-                  </div>
-                </div>
+                    <DialogFooter className="sm:justify-start">
+                      <DialogClose asChild>
+                        <Button type="button" variant="secondary">
+                          Close
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </PopoverContent>
             </Popover>
           </div>

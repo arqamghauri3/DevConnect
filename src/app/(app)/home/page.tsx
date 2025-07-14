@@ -46,7 +46,7 @@ const page = () => {
                 </div>
                 <div className="md:col-span-4">
                     <PostBox onPostCreated={fetchPosts} />
-                    <Separator className='mt-7'/>
+                    <Separator className='mt-7 dark:bg-zinc-800'/>
                     <PostList posts={posts} loading={loading} />
                 </div>
                 <div className='md:col-span-3'>

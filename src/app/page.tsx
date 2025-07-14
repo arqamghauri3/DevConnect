@@ -107,7 +107,7 @@ const page = () => {
 
       {/* Footer */}
       <footer className="mt-10">
-        <Separator />
+        <Separator/>
         <Footer />
       </footer>
     </div>

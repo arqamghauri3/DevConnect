@@ -155,7 +155,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
 
     if (!session?.user) {
         return (
-            <div className='bg-white text-black border border-gray-200 dark:border-white  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 text-center'>
+            <div className='bg-white text-black border border-gray-200 dark:border-zinc-800  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 text-center'>
                 <p className='mb-4'>Please log in to create a post.</p>
                 <Button onClick={() => router.push('/sign-in')}>
                     Login
@@ -165,7 +165,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
     }
 
     return (
-        <div ref={postBoxRef} className='bg-white text-black border border-gray-200 dark:border-white  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>
+        <div ref={postBoxRef} className='bg-white text-black border border-gray-200 dark:border-zinc-800  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>
             <div className='flex gap-3'>
                 <div>
                     <Image className='rounded-full' src={session.user.profilePicture || "https://kzmfs1j9s5xnomxdm2d3.lite.vusercontent.net/placeholder.svg"} alt="profile" width={40} height={40} />
@@ -202,7 +202,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                                                     <textarea
                                                         placeholder="Write your post..."
                                                         {...field}
-                                                        className="w-full px-1 py-4 mt-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
+                                                        className="w-full px-1 py-4 mt-1 rounded-md border border-gray-200 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y bg-white dark:bg-black dark:text-white"
                                                         rows={3}
                                                         ref={textAreaRef}
                                                         onKeyUp={handleCaretPosition}
