@@ -85,6 +85,19 @@ const PostCard: React.FC<PostCardProps> = ({
     refetchIsUserLike()
   }
 
+  const deletePost = async (post_id: string | undefined) => {
+    try {
+      const response = await axios.delete("/api/posts", {
+        data: { post_id }
+      })
+
+
+    } catch (error) {
+      console.log("error deleting post", error);
+
+    }
+  }
+
   return (
     <Card className="w-full bg-white dark:bg-black text-black dark:text-white border-gray-200 dark:border-zinc-800 rounded-lg mt-5">
       <CardHeader className="flex flex-row items-start space-x-4 p-4">
@@ -111,38 +124,31 @@ const PostCard: React.FC<PostCardProps> = ({
                   <EllipsisIcon />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 bg-black ">
+              <PopoverContent className="w-80 dark:bg-black ">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="ghost" className='flex gap-2 w-full justify-start text-red-400'>
-                      <Trash/>
+                      <Trash />
                       Delete Post
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
+                  <DialogContent className="sm:max-w-md dark:bg-black">
                     <DialogHeader>
-                      <DialogTitle>Share link</DialogTitle>
+                      <DialogTitle>Are you sure?</DialogTitle>
                       <DialogDescription>
-                        Anyone who has this link will be able to view this.
+                        You won't be able to revert the changes.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center gap-2">
-                      <div className="grid flex-1 gap-2">
-                        <Label htmlFor="link" className="sr-only">
-                          Link
-                        </Label>
-                        <Input
-                          id="link"
-                          defaultValue="https://ui.shadcn.com/docs/installation"
-                          readOnly
-                        />
-                      </div>
-                    </div>
                     <DialogFooter className="sm:justify-start">
                       <DialogClose asChild>
-                        <Button type="button" variant="secondary">
-                          Close
-                        </Button>
+                        <div>
+                          <Button type="button" variant="secondary">
+                            Close
+                          </Button>
+                          <Button type="button" variant="secondary" className='text-red-400' onClick={() => deletePost(post_id)}>
+                            Delete
+                          </Button>
+                        </div>
                       </DialogClose>
                     </DialogFooter>
                   </DialogContent>
