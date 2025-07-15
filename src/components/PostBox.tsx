@@ -88,6 +88,8 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
     }, [mediaPreview]);
 
     const onSubmit = async (data: z.infer<typeof postSchema>) => {
+        console.log('submit', data);
+        
         setIsSubmitting(true);
         try {
             const formData = new FormData();
@@ -113,7 +115,14 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
                 }
             });
             toast.success(response.data.message ?? "Post created successfully");
-            form.reset();
+            form.reset({
+                post: "",
+                category: selected, // <-- set default category here
+                media: undefined,
+                link: "",
+                tags: [],
+                event: ""
+            });
             setMediaPreview(null);
             setShowEventInput(false)
             setShowLinkInput(false)
@@ -163,6 +172,7 @@ const PostBox = ({ onPostCreated }: { onPostCreated: () => void }) => {
             </div>
         )
     }
+
 
     return (
         <div ref={postBoxRef} className='bg-white text-black border border-gray-200 dark:border-zinc-800  dark:bg-black dark:text-white px-5 py-4 rounded-md mt-4 '>

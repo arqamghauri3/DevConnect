@@ -16,9 +16,10 @@ interface PopulatedPost extends Omit<PostType, 'userId'> {
 interface PostListProps {
     posts: PopulatedPost[];
     loading: boolean;
+    refetch: () => void
 }
 
-const PostList = ({ posts, loading }: PostListProps) => {
+const PostList = ({ posts, refetch ,loading }: PostListProps) => {
 
     const {data: session} = useSession()
 
@@ -45,6 +46,7 @@ const PostList = ({ posts, loading }: PostListProps) => {
                     mediaType={post.mediaType}
                     post_id={post._id}
                     user_id={session?.user._id}
+                    refetch={refetch}
                 />
             ))}
         </div>

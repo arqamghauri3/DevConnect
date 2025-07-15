@@ -23,6 +23,7 @@ interface PostCardProps {
   mediaType?: 'photo' | 'video';
   post_id?: string
   user_id?: string
+  refetch: () => void
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -34,7 +35,8 @@ const PostCard: React.FC<PostCardProps> = ({
   mediaUrl,
   mediaType,
   post_id,
-  user_id
+  user_id,
+  refetch
 }) => {
 
 
@@ -90,6 +92,7 @@ const PostCard: React.FC<PostCardProps> = ({
       const response = await axios.delete("/api/posts", {
         data: { post_id }
       })
+      refetch()
 
 
     } catch (error) {
